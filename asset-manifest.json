@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/financial-data-filtering-app/static/css/main.ba7004f0.css",
+    "main.js": "/financial-data-filtering-app/static/js/main.bcf49e73.js",
+    "static/js/488.933725f3.chunk.js": "/financial-data-filtering-app/static/js/488.933725f3.chunk.js",
+    "index.html": "/financial-data-filtering-app/index.html",
+    "main.ba7004f0.css.map": "/financial-data-filtering-app/static/css/main.ba7004f0.css.map",
+    "main.bcf49e73.js.map": "/financial-data-filtering-app/static/js/main.bcf49e73.js.map",
+    "488.933725f3.chunk.js.map": "/financial-data-filtering-app/static/js/488.933725f3.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ba7004f0.css",
+    "static/js/main.bcf49e73.js"
+  ]
+}
