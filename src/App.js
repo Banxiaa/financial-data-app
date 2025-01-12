@@ -7,7 +7,7 @@ const App = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [filters, setFilters] = useState({ dateFrom: '', dateTo: '', revenueMin: '', revenueMax: '', netIncomeMin: '', netIncomeMax: '' });
-  const [sortOption, setSortOption] = useState('');
+  const [sortOption, setSortOption] = useState('dateAsc');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -16,10 +16,18 @@ const App = () => {
       .get('https://financialmodelingprep.com/api/v3/income-statement/AAPL?period=annual&apikey=Dl9QItybedcwXsHa0HgcTyczhTZ680bM')
       .then((response) => {
         setData(response.data);
-        setFilteredData(response.data);
       })
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
+  
+  useEffect(() => {
+    // 初始化时，显示原始数据
+    if (filteredData.length === 0 && data.length > 0) {
+      setFilteredData(data);  // 设置初始的过滤数据为所有数据
+    } else {
+      applySort();  // 如果filteredData有值，应用排序
+    }
+  }, [filteredData, data]);
 
   const applyFilters = () => {
     let filtered = [...data];
@@ -51,9 +59,10 @@ const App = () => {
         );
       });
     }
-
     setFilteredData(filtered);
     setCurrentPage(1);
+
+    //applySort();
   };
 
   const applySort = () => {
@@ -67,6 +76,10 @@ const App = () => {
       sorted.sort((a, b) => a.revenue - b.revenue);
     } else if (sortOption === 'revenueDesc') {
       sorted.sort((a, b) => b.revenue - a.revenue);
+    } else if (sortOption === 'netIncomeAsc') {
+      sorted.sort((a, b) => a.netIncome - b.netIncome);
+    } else if (sortOption === 'netIncomeDesc') {
+      sorted.sort((a, b) => b.netIncome - a.netIncome);
     }
 
     setFilteredData(sorted);
@@ -74,6 +87,28 @@ const App = () => {
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
+  };
+
+  const handleWindowToggle = (windowType) => {
+    if (windowType === 'sort') {
+      if (isSortOpen) {
+        setIsSortOpen(false);
+      } else {
+        if (isFilterOpen) {
+          setIsFilterOpen(false);
+        }
+        setIsSortOpen(true);
+      }
+    } else if (windowType === 'filter') {
+      if (isFilterOpen) {
+        setIsFilterOpen(false);
+      } else {
+        if (isSortOpen) {
+          setIsSortOpen(false);
+        }
+        setIsFilterOpen(true);
+      }
+    }
   };
 
   const paginatedData = filteredData.slice(
@@ -88,9 +123,17 @@ const App = () => {
       {/* Filter Button */}
       <button
         className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
-        onClick={() => setIsFilterOpen(!isFilterOpen)}
+        onClick={() => handleWindowToggle('filter')}
       >
         Filter
+      </button>
+
+      {/* Sort Button */}
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
+        onClick={() => handleWindowToggle('sort')}
+      >
+        Sort
       </button>
 
       {isFilterOpen && (
@@ -149,14 +192,6 @@ const App = () => {
         </div>
       )}
 
-      {/* Sort Button */}
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
-        onClick={() => setIsSortOpen(!isSortOpen)}
-      >
-        Sort
-      </button>
-
       {isSortOpen && (
         <div className="bg-gray-100 p-4 rounded mb-4">
           <h2 className="font-bold mb-2">Sort Options</h2>
@@ -165,18 +200,14 @@ const App = () => {
             onChange={(e) => setSortOption(e.target.value)}
             className="border p-2 rounded w-full"
           >
-            <option value="">Select...</option>
+
             <option value="dateAsc">Date (Ascending)</option>
             <option value="dateDesc">Date (Descending)</option>
             <option value="revenueAsc">Revenue (Ascending)</option>
             <option value="revenueDesc">Revenue (Descending)</option>
+            <option value="netIncomeAsc">Net Income (Ascending)</option>
+            <option value="netIncomeDesc">Net Income (Descending)</option>
           </select>
-          <button
-            className="bg-green-500 text-white px-4 py-2 mt-4 rounded"
-            onClick={applySort}
-          >
-            Apply Sort
-          </button>
         </div>
       )}
 
@@ -185,7 +216,7 @@ const App = () => {
         <table className="table-auto w-full border-collapse border border-gray-300">
           <thead>
             <tr>
-              <th className="border px-4 py-2">Date</th>
+              <th className="border px-4 py-2" style={{ whiteSpace: 'nowrap' }}>Date</th>
               <th className="border px-4 py-2">Revenue</th>
               <th className="border px-4 py-2">Net Income</th>
               <th className="border px-4 py-2">Gross Profit</th>
@@ -196,7 +227,7 @@ const App = () => {
           <tbody>
             {paginatedData.map((item, index) => (
               <tr key={index} className="text-center">
-                <td className="border px-4 py-2">{item.date}</td>
+                <td className="border px-4 py-2" style={{ whiteSpace: 'nowrap' }}>{item.date}</td>
                 <td className="border px-4 py-2">${item.revenue.toLocaleString()}</td>
                 <td className="border px-4 py-2">${item.netIncome.toLocaleString()}</td>
                 <td className="border px-4 py-2">${item.grossProfit.toLocaleString()}</td>
