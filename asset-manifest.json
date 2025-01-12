@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/financial-data-app/static/css/main.ba7004f0.css",
-    "main.js": "/financial-data-app/static/js/main.92966740.js",
+    "main.css": "/financial-data-app/static/css/main.c1496f4c.css",
+    "main.js": "/financial-data-app/static/js/main.1851bcf7.js",
     "static/js/488.933725f3.chunk.js": "/financial-data-app/static/js/488.933725f3.chunk.js",
     "index.html": "/financial-data-app/index.html",
-    "main.ba7004f0.css.map": "/financial-data-app/static/css/main.ba7004f0.css.map",
-    "main.92966740.js.map": "/financial-data-app/static/js/main.92966740.js.map",
+    "main.c1496f4c.css.map": "/financial-data-app/static/css/main.c1496f4c.css.map",
+    "main.1851bcf7.js.map": "/financial-data-app/static/js/main.1851bcf7.js.map",
     "488.933725f3.chunk.js.map": "/financial-data-app/static/js/488.933725f3.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.ba7004f0.css",
-    "static/js/main.92966740.js"
+    "static/css/main.c1496f4c.css",
+    "static/js/main.1851bcf7.js"
   ]
 }
