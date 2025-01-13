@@ -19,7 +19,7 @@ const App = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   // Local API : http://127.0.0.1:8000/data
-  const API = 'http://3.147.85.86:8000/data';
+  const API = 'https://3.147.85.86:8000/data';
 
   // Fetch data from the API on component mount
   useEffect(() => {
