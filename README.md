@@ -6,10 +6,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 In the project directory, you can run
 ### `uvicorn backend:app`
 ### `npm start`
-If you want to run the project locally, you need to change the variable 'API' with the local API
+If you want to run the project locally, you need to change the variable 'API' with the local API.
 
 ## Link to deployed app
 Open [https://banxiaa.github.io/financial-data-app/](https://banxiaa.github.io/financial-data-app/)
+If you want to visit this app via mobile device, please visit [https://3.147.85.86:8000/data](https://3.147.85.86:8000/data)on your device first, and choose to trust the website. Otherwise, the browser will not trust this API or display any data.
 
 ## Available Scripts
 
