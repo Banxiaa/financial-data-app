@@ -2,93 +2,72 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const App = () => {
+  // State variables to hold data, filters, and pagination state
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
-  const [filters, setFilters] = useState({ dateFrom: '', dateTo: '', revenueMin: '', revenueMax: '', netIncomeMin: '', netIncomeMax: '' });
+  const [filters, setFilters] = useState({
+    dateFrom: '',
+    dateTo: '',
+    revenueMin: '',
+    revenueMax: '',
+    netIncomeMin: '',
+    netIncomeMax: '',
+  });
   const [sortOption, setSortOption] = useState('dateAsc');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  // Local API : http://127.0.0.1:8000/data
+  const API = 'http://3.147.85.86:8000/data';
 
+  // Fetch data from the API on component mount
   useEffect(() => {
     axios
-      .get('https://financialmodelingprep.com/api/v3/income-statement/AAPL?period=annual&apikey=Dl9QItybedcwXsHa0HgcTyczhTZ680bM')
+      .get(API) 
       .then((response) => {
+        console.log("Fetched Data:", response.data.data
+        );  
         setData(response.data);
+        setFilteredData(response.data);
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
   }, []);
-  
+
+  // Apply filters and sorting when sortOption changes
   useEffect(() => {
-    // 初始化时，显示原始数据
-    if (filteredData.length === 0 && data.length > 0) {
-      setFilteredData(data);  // 设置初始的过滤数据为所有数据
-    } else {
-      applySort();  // 如果filteredData有值，应用排序
-    }
-  }, [filteredData, data]);
+    applyFilters();
+  }, [sortOption]);
 
+  // Function to apply filters based on the filter state
   const applyFilters = () => {
-    let filtered = [...data];
-
-    if (filters.dateFrom || filters.dateTo) {
-      filtered = filtered.filter((item) => {
-        const year = new Date(item.date).getFullYear();
-        return (
-          (!filters.dateFrom || year >= parseInt(filters.dateFrom)) &&
-          (!filters.dateTo || year <= parseInt(filters.dateTo))
-        );
-      });
-    }
-
-    if (filters.revenueMin || filters.revenueMax) {
-      filtered = filtered.filter((item) => {
-        return (
-          (!filters.revenueMin || item.revenue >= parseFloat(filters.revenueMin)) &&
-          (!filters.revenueMax || item.revenue <= parseFloat(filters.revenueMax))
-        );
-      });
-    }
-
-    if (filters.netIncomeMin || filters.netIncomeMax) {
-      filtered = filtered.filter((item) => {
-        return (
-          (!filters.netIncomeMin || item.netIncome >= parseFloat(filters.netIncomeMin)) &&
-          (!filters.netIncomeMax || item.netIncome <= parseFloat(filters.netIncomeMax))
-        );
-      });
-    }
-    setFilteredData(filtered);
-    setCurrentPage(1);
-
-    //applySort();
+    axios
+      .get(API, {
+        params: {
+          date_from: filters.dateFrom,
+          date_to: filters.dateTo,
+          revenue_min: filters.revenueMin,
+          revenue_max: filters.revenueMax,
+          net_income_min: filters.netIncomeMin,
+          net_income_max: filters.netIncomeMax,
+          sort: sortOption
+        },
+      })
+      .then((response) => {
+        setFilteredData(response.data);
+        setCurrentPage(1);
+      })
+      .catch((error) => console.error('Error applying filters:', error));
   };
 
-  const applySort = () => {
-    let sorted = [...filteredData];
-
-    if (sortOption === 'dateAsc') {
-      sorted.sort((a, b) => new Date(a.date) - new Date(b.date));
-    } else if (sortOption === 'dateDesc') {
-      sorted.sort((a, b) => new Date(b.date) - new Date(a.date));
-    } else if (sortOption === 'revenueAsc') {
-      sorted.sort((a, b) => a.revenue - b.revenue);
-    } else if (sortOption === 'revenueDesc') {
-      sorted.sort((a, b) => b.revenue - a.revenue);
-    } else if (sortOption === 'netIncomeAsc') {
-      sorted.sort((a, b) => a.netIncome - b.netIncome);
-    } else if (sortOption === 'netIncomeDesc') {
-      sorted.sort((a, b) => b.netIncome - a.netIncome);
-    }
-
-    setFilteredData(sorted);
-  };
-
+  // Function to handle pagination by setting the current page (for bigger dataset)
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
 
+  // Function to toggle between the filter and sort windows
   const handleWindowToggle = (windowType) => {
     if (windowType === 'sort') {
       if (isSortOpen) {
@@ -111,6 +90,7 @@ const App = () => {
     }
   };
 
+  // Get the data for current page
   const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
